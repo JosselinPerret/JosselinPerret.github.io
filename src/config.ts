@@ -10,29 +10,18 @@ export const siteConfig = {
     github: "https://github.com/JosselinPerret",
   },
   aboutMe:
-    "CentraleSupelec engineering student with a strong mathematical background (MPSI/MP*). Focused on world models and latent representation learning for real-world sensor data. Co-founder of an AI startup applying deep learning to noisy clinical data, and currently exploring theoretical extensions to RSSM architectures in hyperbolic latent spaces.",
+    "I'm an engineering student at CentraleSupélec working on representation learning for sensor data. Currently, I'm co-founder at ZenkoLab, where we deploy deep learning for medical imaging. I'm also exploring how hyperbolic geometry could improve world models—research that bridges my interest in geometric deep learning with practical applications.",
   skills: [
     "PyTorch",
-    "JAX (learning)",
+    "JAX",
     "Scikit-Learn",
-    "XGBoost",
-    "Transformers",
-    "CNNs",
     "Computer Vision",
     "Python",
-    "Git",
-    "Docker",
-    "LaTeX",
-    "Riemannian Geometry",
-    "Stochastic Processes",
-    "Probability & Measure",
-    "Linear Algebra",
-    "Optimization",
   ],
   experience: [
     {
       company: "ZenkoLab",
-      title: "Co-founder & AI R&D Lead",
+      title: "Co-founder & CEO",
       dateRange: "Sep 2024 - Present",
       bullets: [
         "Engineered a pipeline handling high-dimensional, noisy retinal imaging data (fundus and OCT) in partnership with the Hopital National de 15-20, covering acquisition, cleaning, and validation across 200k+ annotated images.",
@@ -43,8 +32,8 @@ export const siteConfig = {
   ],
   education: [
     {
-      school: "CentraleSupelec -- Paris-Saclay University",
-      degree: "Master of Engineering (Diplome d'Ingenieur)",
+      school: "CentraleSupélec",
+      degree: "Master of Engineering (Diplôme d'Ingénieur)",
       dateRange: "Sep 2024 - Present",
       achievements: [
         "Relevant coursework: Statistical Learning, Deep Learning, Probability & Measure, Optimization, Signal Processing, Data-Driven Control, Time-Series Analysis.",
@@ -62,7 +51,7 @@ export const siteConfig = {
       ],
     },
     {
-      school: "Lycee Henri IV",
+      school: "Lycée Henri IV",
       degree: "Preparatory Classes, MPSI/MP* (Mathematics & Physics)",
       dateRange: "Sep 2022 - Jun 2024",
       achievements: [
