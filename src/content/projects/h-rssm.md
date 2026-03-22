@@ -15,20 +15,299 @@ skills:
 
 Introduced the horospherical Gaussian, a distribution family on hyperbolic space with closed-form KL divergence in O(d), designed to support ELBO-based training of hyperbolic world models at computational cost comparable to Euclidean baselines.
 
-## Story and approach
-
-Trained sequential world models (RSSM/GRU) with hyperbolic versus Euclidean latent spaces on synthetic tree-structured MDPs. Through dimensional sweep and linear probing, identified three distinct variational optimization failure regimes and observed an empirical crossover around d2* approximately 7. Resume status: ongoing.
-
-Validated analytic expressions against Monte Carlo estimates with reported error below 0.02%.
-
-## Images and media
-
-![Placeholder project figure](/images/projects/placeholder-cover.svg)
-
-Tip: place images in public/images/projects and reference them like:
-
-![Project screenshot](/images/projects/project-1-screenshot.png)
-
-## Next steps
-
-[Placeholder] Add additional experiments, ablations, and updated results as this ongoing research progresses.
+# Can Hyperbolic Geometry Help World Models Learn Hierarchical Structure?
+ 
+*A research exploration at the intersection of Riemannian geometry and model-based reinforcement learning.*
+ 
+---
+ 
+> **Status:** Work in progress — ongoing research, not yet submitted for publication.
+> All results presented here are preliminary. I describe what held, what failed, and why.
+ 
+---
+ 
+## Background and Motivation
+ 
+World models for reinforcement learning agents — architectures like [DreamerV3](https://arxiv.org/abs/2301.04104) or [IRIS](https://arxiv.org/abs/2209.00588) — learn a compact representation of the environment together with a transition kernel over that representation. The geometry of the latent space is a fundamental but often overlooked design choice.
+ 
+All practical world models use a Euclidean latent space $\mathcal{Z} = \mathbb{R}^d$. This is computationally convenient, but it may not be the right geometry for environments with hierarchical structure. An agent navigating a grid world with nested sub-goals, or reasoning about object-part relationships, is operating in a world whose causal graph is tree-like — and trees embed very poorly in flat space.
+ 
+A result by [Sarkar (2011)](https://link.springer.com/chapter/10.1007/978-3-642-25878-7_34), building on work by [Nickel & Kiela (2017)](https://arxiv.org/abs/1705.08039), shows that any tree of $n$ nodes can be embedded in the **hyperbolic plane** $\mathbb{H}^2$ with arbitrarily small distortion, while achieving the same in $\mathbb{R}^d$ requires $O(n)$ dimensions. The exponential volume growth of $\mathbb{H}^d$ is geometrically matched to the exponential node growth of trees.
+ 
+This raises a natural question: **does replacing $\mathbb{R}^d$ with $\mathbb{H}^d$ in a world model latent space lead to better representations of hierarchically structured environments?**
+ 
+This article documents an attempt to answer it — including the obstacles encountered and the three distinct failure modes discovered along the way.
+ 
+---
+ 
+## The Technical Obstacle: Intractable KL Divergences
+ 
+Before any experiment, there is a hard computational problem to solve.
+ 
+World models are trained by maximizing the Evidence Lower BOund (ELBO):
+ 
+$$\mathcal{L}(\theta, \phi) = \sum_{t=1}^T \mathbb{E}_{q_\phi}\left[\log p_\theta(o_t \mid z_t, h_t)\right] - \beta \sum_{t=1}^T \mathrm{KL}\!\left[q_\phi(z_t \mid h_t, o_t)\,\big\|\,p_\theta(z_t \mid h_t)\right]$$
+ 
+In the Euclidean case, both prior and posterior are Gaussian, and the KL is closed form in $O(d)$:
+ 
+$$\mathrm{KL}\!\left[\mathcal{N}(\mu_q, \sigma_q^2)\,\|\,\mathcal{N}(\mu_p, \sigma_p^2)\right] = \log\frac{\sigma_p}{\sigma_q} + \frac{\sigma_q^2 + (\mu_q - \mu_p)^2}{2\sigma_p^2} - \frac{1}{2}$$
+ 
+On $\mathbb{H}^d$, the natural candidate is the **Riemannian Normal** $\mathcal{N}_\mathbb{H}(\mu, \sigma^2) \propto e^{-d_\mathbb{H}^2(z,\mu)/2\sigma^2}$. Its normalising constant involves:
+ 
+$$Z_\mathbb{H}(\sigma) = \int_0^\infty e^{-r^2/2\sigma^2} \sinh^{d-1}(r)\, dr$$
+ 
+For $d \geq 3$, this has no closed form. KL divergences require Monte Carlo estimation — too slow for the millions of ELBO evaluations per second needed during RL training.
+ 
+This is the problem I set out to fix first.
+ 
+---
+ 
+## The Horospherical Gaussian: A Tractable Family on $\mathbb{H}^d$
+ 
+### Setting
+ 
+I work in the **upper half-space model** of hyperbolic space:
+ 
+$$\mathbb{H}^d = \{(\tau, b) : \tau \in \mathbb{R},\; b \in \mathbb{R}^{d-1}\}$$
+ 
+with metric $ds^2 = d\tau^2 + e^{-2\tau}\|db\|^2$ and Riemannian volume form:
+ 
+$$d\mathrm{vol}(\tau, b) = e^{-(d-1)\tau}\, d\tau\, db$$
+ 
+The coordinate $\tau$ is the **Busemann coordinate** — it measures signed distance to the ideal boundary $\partial\mathbb{H}^d$. The coordinate $b$ is the **fibre coordinate** — lateral position within a level. This model is computationally preferable to the Poincaré ball because additive updates $(\tau, b) \leftarrow (\tau + \delta\tau, b + \delta b)$ are globally well-defined, avoiding the boundary singularities that cause numerical instabilities in Möbius-based implementations.
+ 
+### Definition
+ 
+> **Horospherical Gaussian.** Fix $\mu_\tau \in \mathbb{R}$, $\mu_b \in \mathbb{R}^{d-1}$, $\sigma_\tau > 0$, $\sigma_b > 0$. The distribution $\mathcal{HG}(\mu_\tau, \mu_b, \sigma_\tau, \sigma_b)$ has density w.r.t. $d\mathrm{vol}$:
+>
+> $$p(\tau, b) = \frac{1}{Z}\exp\!\left(-\frac{(\tau - \mu_\tau)^2}{2\sigma_\tau^2} - \frac{\|b - \mu_b\|^2}{2\,e^{2\tau}\,\sigma_b^2}\right)$$
+ 
+The critical design choice is the conditional variance $\mathrm{Var}(b \mid \tau) = e^{2\tau}\sigma_b^2$. This is the **unique** variance scaling for which the following cancellation occurs.
+ 
+### The Key Cancellation (Why the KL is Tractable)
+ 
+Integrating over $b$ at fixed $\tau$:
+ 
+$$\int_{\mathbb{R}^{d-1}} e^{-\|b-\mu_b\|^2/2e^{2\tau}\sigma_b^2}\, db = (2\pi\sigma_b^2)^{(d-1)/2} \cdot e^{(d-1)\tau}$$
+ 
+The factor $e^{(d-1)\tau}$ from the Gaussian integral cancels exactly with $e^{-(d-1)\tau}$ from the volume form. The normalising constant becomes:
+ 
+$$Z = \sqrt{2\pi}\,\sigma_\tau \cdot (2\pi\sigma_b^2)^{(d-1)/2}$$
+ 
+This is **independent of $\mu_\tau$ and $\mu_b$** — the same structure that makes the Euclidean Gaussian KL tractable.
+ 
+A second cancellation occurs when computing the key moment $\mathbb{E}_q[e^{-2\tau}\|b - \mu_b\|^2]$ via the tower property:
+ 
+$$\mathbb{E}_q\!\left[e^{-2\tau}\|b-\mu_b\|^2\right] = \mathbb{E}_\tau\!\left[e^{-2\tau} \cdot (d-1)e^{2\tau}\sigma_b^2\right] = (d-1)\sigma_b^2$$
+ 
+The $e^{2\tau}$ from $\mathrm{Var}(b\mid\tau)$ cancels $e^{-2\tau}$ from the quadratic form exactly.
+ 
+### Closed-Form KL
+ 
+Using these two cancellations, the KL between two $\mathcal{HG}$ distributions is:
+ 
+$$\mathrm{KL}[q\|p] = \underbrace{\log\frac{\sigma_\tau^p}{\sigma_\tau^q} + \frac{(\sigma_\tau^q)^2 + (\mu_\tau^q - \mu_\tau^p)^2}{2(\sigma_\tau^p)^2} - \frac{1}{2}}_{\text{height KL}} + (d-1)\underbrace{\!\left(\log\frac{\sigma_b^p}{\sigma_b^q} + \frac{(\sigma_b^q)^2}{2(\sigma_b^p)^2} - \frac{1}{2}\right)}_{\text{fibre scale KL}} + \underbrace{\frac{\|\mu_b^q - \mu_b^p\|^2}{2(\sigma_b^p)^2}\,e^{-2\mu_\tau^q + 2(\sigma_\tau^q)^2}}_{\text{drift term}}$$
+ 
+All three terms are exact. Total computation: $O(d)$. The drift term uses the moment generating function of the Gaussian $\tau \sim \mathcal{N}(\mu_\tau^q, (\sigma_\tau^q)^2)$ evaluated at $s = -2$:
+ 
+$$\mathbb{E}[e^{-2\tau}] = e^{-2\mu_\tau^q + 2(\sigma_\tau^q)^2}$$
+ 
+I validated this formula against Monte Carlo estimation (300,000 samples) and found a relative error of 0.02%.
+ 
+### Reparameterisation
+ 
+Sampling from $\mathcal{HG}$ via the reparameterisation trick:
+ 
+$$\tau = \mu_\tau^q + \sigma_\tau^q\,\varepsilon_1, \quad \varepsilon_1 \sim \mathcal{N}(0,1)$$
+$$b = \mu_b^q + e^\tau\,\sigma_b^q\,\varepsilon_2, \quad \varepsilon_2 \sim \mathcal{N}(0, I_{d-1})$$
+ 
+**Important:** $b$ depends on $\mu_\tau^q$ through $e^\tau = e^{\mu_\tau^q + \sigma_\tau^q\varepsilon_1}$. This coupling is exact and must be preserved in automatic differentiation.
+ 
+### Approximation Quality
+ 
+One honest limitation: $\mathcal{HG}$ is not the same as the Riemannian Normal. The approximation quality is:
+ 
+$$\mathrm{KL}\!\left[\mathcal{N}_\mathbb{H}(\mu, \sigma^2)\,\big\|\,\mathcal{HG}(\mu_\tau, \mu_b, \sigma, \sigma)\right] = \frac{d^2-1}{8}\,\sigma^2 + O(\sigma^3)$$
+ 
+For $d = 16$ and $\sigma = 0.3$, this gives an error of approximately 2.87 — not negligible. The $\mathcal{HG}$ is a tractable approximation, not a geometrically exact distribution. Whether this error matters in practice is one of the empirical questions this work addresses.
+ 
+---
+ 
+## Experimental Setup
+ 
+### Environment
+ 
+To test the hypothesis with controlled ground truth, I built a **$B$-ary tree MDP**: a rooted tree with branching factor $B$ and depth $L$. Each node $v$ has a known depth $\ell(v) \in \{0, \ldots, L\}$ and a fixed observation generated by mixing random depth and branch embeddings:
+ 
+$$o_v = \tanh(W_{\mathrm{obs}} \cdot \mathrm{concat}(e_v^{\mathrm{depth}}, e_v^{\mathrm{branch}})) + \varepsilon, \quad \varepsilon \sim \mathcal{N}(0, \sigma_{\mathrm{obs}}^2 I)$$
+ 
+The embeddings $e_v^{\mathrm{depth}}$ and $e_v^{\mathrm{branch}}$ are **never given to the model**. It only sees $o_v \in \mathbb{R}^{64}$ and must infer structure from sequential transitions.
+ 
+The reference tree uses $B = 4$, $L = 5$, giving 1365 nodes with $\log_2(1365) \approx 10.4$ — the theoretical Sarkar threshold below which $\mathbb{H}^d$ should require fewer dimensions than $\mathbb{R}^d$.
+ 
+### Model
+ 
+A sequential world model with GRU recurrence. Prior and posterior are $\mathcal{HG}$ distributions on $\mathbb{H}^{d_2}$ (hyperbolic model) or Gaussian on $\mathbb{R}^{d_2}$ (Euclidean baseline). The comparison is $\mathbb{H}^{d_2}$ vs $\mathbb{R}^{d_2}$ — same total dimensions, same decoder architecture, same parameter count.
+ 
+### Metrics
+ 
+- **Reconstruction MSE**: primary metric, computed on held-out test trajectories
+- **Spearman $\rho_\tau$**: correlation between $\mu_\tau^q$ and ground-truth depth (hyperbolic only)
+- **Linear probes**: logistic regression from $\tau$ alone to predict depth, and from $b$ alone to predict branch index at depth 1 — separating representation quality from reconstruction quality
+- **Gradient attenuation**: $\mathbb{E}[e^{\tau_t}]$, measuring how much the $b$-gradient is scaled by the reparameterisation coupling
+ 
+---
+ 
+## Results
+ 
+### Experiment 1: Does $\tau$ Spontaneously Encode Depth?
+ 
+The first question was whether a model trained with an ELBO objective on tree trajectories would spontaneously align $\tau$ with depth — without any explicit supervision.
+ 
+At $d_2 = 16$: $\rho_\tau = 0.867$ (p < 0.001). The KDE plot shows partially separated depth distributions. The UMAP shows clean depth clusters.
+ 
+However, two things undermined this result:
+ 
+1. The Euclidean baseline achieved $\rho_\mathrm{euc} = 0.895$ — slightly better depth encoding than the hyperbolic model
+2. The negative control (flat tree, $B=50$, $L=2$) also gave $\rho_\tau = 0.905$ — higher than the reference condition. A model that encodes depth *better* on an almost-flat tree has not learned geometry; it has learned to discriminate an easier classification problem
+ 
+> **Conclusion**: the ELBO alone does not suffice to produce a specifically geometric encoding of hierarchy in $\tau$. The correlation with depth is real but is driven by the observation structure, not by the hyperbolic geometry.
+ 
+| | Condition | Reference | Flat tree |
+|---|---|---|---|
+| Hyperbolic | $\rho_\tau$ | 0.867 | 0.905 |
+| Euclidean | $\rho_\mathrm{euc}$ | 0.895 | 0.907 |
+ 
+---
+ 
+`[FIGURE PLACEHOLDER — fig1_tau_vs_depth.pdf]`
+*Violin plots of $\mu_\tau^q$ per depth level. Reference condition (left) shows partial ordering; flat tree (right) shows clean separation on only 3 levels — confirming the negative control failure.*
+ 
+---
+ 
+### Experiment 2: Capacity Test — $\mathbb{H}^{d_2}$ vs $\mathbb{R}^{d_2}$ under Dimensional Constraint
+ 
+Since both models had ample capacity at $d_2 = 16$, I ran a full sweep $d_2 \in \{2, 4, 8, 16, 32\}$ to find whether the hyperbolic advantage appears when capacity is genuinely constrained.
+ 
+---
+ 
+`[FIGURE PLACEHOLDER — fig1_capacity_curve.pdf]`
+*Left: reconstruction MSE vs $d_2$ for both models. The hyperbolic curve is non-monotone — a U-shape with minimum at $d_2 = 16$. Right: depth encoding $\rho$ vs $d_2$.*
+ 
+---
+ 
+`[FIGURE PLACEHOLDER — fig2_gap_and_attenuation.pdf]`
+*Left: MSE gap (Euclidean − Hyperbolic) per $d_2$. Positive = hyperbolic wins. The gap changes sign between $d_2 = 4$ and $d_2 = 8$, with empirical crossover $d_2^* \approx 7$, close to the Sarkar threshold $\log_2(1365) \approx 10.4$. Right: gradient attenuation $\mathbb{E}[e^{\tau_t}]$ — a spike at $d_2 = 4$ (value 20.4) reveals an instability regime.*
+ 
+---
+ 
+The results are summarised below. **Three distinct regimes emerge**, not a simple monotone relationship:
+ 
+| $d_2$ | MSE hyp | MSE euc | Gap | $\mathbb{E}[e^\tau]$ | $\rho_\tau$ | Probe $\tau \to \ell$ | Probe $b \to$ branch |
+|---|---|---|---|---|---|---|---|
+| 2 | 12.12 | 11.33 | −0.78 | 0.74 | 0.56 | 0.844 | **0.945** |
+| 4 | 11.30 | 10.36 | −0.94 | **20.44** | 0.43 | **0.917** | 0.727 |
+| 8 | **9.93** | 10.25 | **+0.31** | 0.47 | 0.83 | 0.752 | 1.000 |
+| 16 | **9.90** | 10.51 | **+0.61** | 0.43 | 0.87 | 0.897 | 1.000 |
+| 32 | 11.20 | 10.75 | −0.45 | 0.70 | 0.25 | 0.439 | 0.995 |
+ 
+---
+ 
+`[FIGURE PLACEHOLDER — fig4_heatmap.pdf]`
+*Per-depth MSE heatmap. Left: hyperbolic. Centre: Euclidean. Right: advantage map (blue = hyperbolic wins, red = Euclidean wins). The hyperbolic model struggles most at depth 1 for small $d_2$ — consistent with the gradient attenuation mechanism described below.*
+ 
+---
+ 
+`[FIGURE PLACEHOLDER — fig3_linear_probes.pdf]`
+*Linear probe accuracies. Left: predicting depth from $\tau$ alone. Right: predicting branch from $b$ alone at depth 1. The branch probe at $d_2 = 4$ drops to 0.73 for the hyperbolic model while staying at 1.0 for Euclidean — evidence that the instability at $d_2 = 4$ is specifically in the fibre coordinate $b$.*
+ 
+---
+ 
+`[FIGURE PLACEHOLDER — fig5_tau_distributions.pdf]`
+*Kernel density estimates of $\mu_\tau^q$ per depth level across all $d_2$. The pathological case at $d_2 = 4$ ($\mathbb{E}[e^\tau] = 20.4$) is clearly visible: $\tau$ spreads from $-4$ to $+6$ instead of forming depth-aligned clusters.*
+ 
+---
+ 
+### The Three Failure Regimes
+ 
+The linear probes are the key diagnostic. At every $d_2$, the depth information and branch information are **present** in the representations — the probe accuracies never collapse to chance. The failures are in optimisation, not representation.
+ 
+**Regime 1: $d_2 = 2$ — Decoder capacity constraint.**
+Probe depth = 0.84, probe branch = 0.95. The representations are correct. But the decoder receives $(\tau, b \cdot e^{-\tau}) \in \mathbb{R}^2$ and must reconstruct $o_t \in \mathbb{R}^{64}$ — a 32:1 compression. The model cannot recover the original observation regardless of representation quality. This is a decoder bottleneck, not a geometric problem.
+ 
+**Regime 2: $d_2 = 4$ — ELBO instability via gradient explosion.**
+The reparameterisation coupling $\partial b / \partial \mu_\tau^q = e^\tau \sigma_b \varepsilon_2$ creates an incentive: when the model needs a strong gradient on $b$ to separate branches, it increases $\mathbb{E}[e^\tau]$ by spreading $\mu_\tau^q$ toward large positive values. With 3 fibre dimensions and 4 branches to separate, the model finds a local optimum where $\tau$ is high-variance and non-informative about depth ($\rho_\tau = 0.43$), while $b$ achieves adequate but imperfect branch separation (probe = 0.73).
+ 
+**Regime 3: $d_2 = 32$ — KL fibre domination.**
+The KL decomposes as height KL + $(d_2-1) \times$ fibre scale KL + drift. With 31 fibre dimensions, the fibre term dominates and the model minimises total KL by making $\sigma_\tau^q$ very small — $\tau$ becomes quasi-constant ($\text{std} = 0.17$) and non-informative ($\rho_\tau = 0.25$, probe = 0.44). All structure is absorbed into $b$.
+ 
+---
+ 
+## What This Suggests
+ 
+The main positive result — the hyperbolic model outperforms the Euclidean baseline on reconstruction for $d_2 \in \{8, 16\}$, with an empirical crossover at $d_2^* \approx 7$ close to the Sarkar threshold — is real but needs to be qualified.
+ 
+**The crossover is not explained by geometry alone.** The Euclidean model fails to make efficient use of its dimensions as $d_2$ grows, while the hyperbolic model finds a better-organised representation at $d_2 = 8$–$16$. Whether this is due to the hyperbolic geometry or to the specific form of the $\mathcal{HG}$ KL (which creates different regularisation pressure than a Gaussian KL) is not yet clear.
+ 
+**The three failure modes identify concrete fixes.** Each regime has a targeted solution: a stronger decoder for regime 1; a separate KL weight $\beta_\tau$ for the height component to prevent fibre domination for regime 3; and an action-conditioned geodesic prior to stabilise $\tau$ for regime 2. These are directions for future work.
+ 
+**The linear probes are perhaps the most useful finding.** Demonstrating that representation quality and reconstruction quality can dissociate — and that ELBO optimisation can consistently fail to use correct representations — is a broader observation about variational training on curved spaces that extends beyond this specific setting.
+ 
+---
+ 
+## Assumptions and Limitations
+ 
+I want to be explicit about what this work assumes and where it might break.
+ 
+**The GRU architecture.** The GRU updates its hidden state using $(\tau_{t-1}, b_{t-1})$ as a flat Euclidean vector. There is no inductive bias toward using $\tau$ for depth or $b$ for branch — the architecture treats them symmetrically. A transformer with attention over hyperbolic representations, or an architecture with an explicit action-conditioned prior on $\tau$, might produce qualitatively different results.
+ 
+**The synthetic tree environment.** The environment is maximally hierarchical and fully balanced. Real environments have much weaker, irregular, and potentially non-tree-like structure. Whether hyperbolic geometry helps in those settings is untested.
+ 
+**The $\mathcal{HG}$ approximation error.** As noted above, $\mathrm{KL}[\mathcal{N}_\mathbb{H}\|\mathcal{HG}] = \frac{d^2-1}{8}\sigma^2 + O(\sigma^3)$. For $d \geq 8$ and typical posterior widths, this error is not small. The optimisation target is not the geodesically correct objective.
+ 
+**Single random seed.** Results reported here are from single training runs. Variance across seeds has not been systematically measured.
+ 
+---
+ 
+## Theoretical Work (Incomplete)
+ 
+In parallel to the experiments, I worked on a theoretical question: under what conditions does the ELBO gradient have a strictly positive component along $\partial / \partial \mu_\tau^q$, guaranteeing that training spontaneously pushes representations toward larger $\tau$?
+ 
+I connected this to the **Kesten-Stigum theorem** (1966) on broadcasting processes on trees, showing that under three assumptions (stationary variance regime, tree-structured environment, Gaussian likelihood), the gradient is positive for all depths beyond a finite critical depth $\ell^*$ when $B e^{-4c} > 1$ (where $c$ is the height increment and $B$ the branching factor). This gives an explicit architectural design criterion: $(\sigma_\tau^p)^2 < \sigma_\mathcal{L}^2(\sqrt{B} - 1)$.
+ 
+However, two of the three assumptions are strong (stationarity is not guaranteed during training; Gaussian likelihood is restrictive), and the $O(\sigma^4)$ approximation theorem on which the self-tightening argument relies has a gap in its proof (the symmetry argument used is heuristic). I include this in the interest of transparency — the theoretical direction is interesting but the result is not yet rigorous.
+ 
+---
+ 
+## Code and Reproducibility
+ 
+All experiments were implemented in PyTorch Lightning. The tree MDP, $\mathcal{HG}$ distribution with KL validation against Monte Carlo, world models, and evaluation metrics are available in the accompanying notebooks.
+ 
+The key formulas to reproduce are:
+ 
+- **KL formula**: $\mathrm{KL}[q\|p] = \text{height KL} + (d-1) \cdot \text{fibre KL} + \text{drift term}$ as given above
+- **Reparameterisation**: $\tau = \mu_\tau^q + \sigma_\tau^q \varepsilon_1$, $b = \mu_b^q + e^\tau \sigma_b^q \varepsilon_2$ (coupling must be preserved)
+- **Gradient attenuation diagnostic**: $\mathbb{E}[e^{\tau_t}] = e^{\mu_\tau^q + (\sigma_\tau^q)^2/2}$
+ 
+---
+ 
+## References
+ 
+- Baddeley, A. (1992). Working memory. *Science*, 255(5044), 556–559.
+- Ganea, O., Bécigneul, G., & Hofmann, T. (2018). Hyperbolic neural networks. *NeurIPS*.
+- Gu, A., Sala, F., Gunel, B., & Ré, C. (2019). Learning mixed-curvature representations in product spaces. *ICLR*.
+- Hafner, D. et al. (2019). Learning latent dynamics for planning from pixels (PlaNet). *ICML*.
+- Hafner, D. et al. (2023). Mastering diverse domains with world models (DreamerV3). *arXiv:2301.04104*.
+- Kesten, H., & Stigum, B. P. (1966). A limit theorem for multidimensional Galton-Watson processes. *Annals of Mathematical Statistics*.
+- Mathieu, E. et al. (2019). Continuous hierarchical representations with Poincaré variational auto-encoders. *NeurIPS*.
+- McClelland, J. L., McNaughton, B. L., & O'Reilly, R. C. (1995). Why there are complementary learning systems in the hippocampus and neocortex. *Psychological Review*, 102(3).
+- Micheli, V., Alonso, E., & Fleuret, F. (2022). Transformers are sample-efficient world models (IRIS). *ICLR 2023*.
+- Nagano, Y. et al. (2019). A wrapped normal distribution on hyperbolic space for gradient-based learning. *ICML*.
+- Nickel, M., & Kiela, D. (2017). Poincaré embeddings for learning hierarchical representations. *NeurIPS*.
+- Sarkar, R. (2011). Low distortion Delaunay embedding of trees in hyperbolic plane. *Graph Drawing*.
+- Stachenfeld, K. L., Botvinick, M. M., & Gershman, S. J. (2017). The hippocampus as a predictive map. *Nature Neuroscience*, 20(11).
+- Whittington, J. C. R. et al. (2020). The Tolman-Eichenbaum machine. *Cell*, 183(5).
+ 
+---
+ 
+*Written March 2026. If you have questions or want to discuss, feel free to reach out.*
