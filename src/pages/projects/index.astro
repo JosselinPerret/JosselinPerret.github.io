@@ -1,11 +1,9 @@
 ---
-import { getCollection } from "astro:content";
 import { siteConfig } from "../../config";
+import { getSortedProjects } from "../../utils/projects";
 import "../../styles/global.css";
 
-const projects = (await getCollection("projects")).sort(
-  (a, b) => b.data.publishedAt.getTime() - a.data.publishedAt.getTime(),
-);
+const projects = await getSortedProjects();
 ---
 
 <html lang="en">
