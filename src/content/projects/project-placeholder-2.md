@@ -1,30 +1,28 @@
 ---
-title: "[Project Name 2]"
-description: "[Brief project summary with outcome or impact.]"
+title: "ENS x QRT Challenge Data -- Asset Allocation Performance Forecasting"
+description: "Competition project on forecasting asset allocation performance from low signal-to-noise financial data."
 publishedAt: "2026-02-15"
 coverImage: "/images/projects/placeholder-cover.svg"
-coverImageAlt: "Placeholder cover for project 2"
+coverImageAlt: "QRT challenge project cover"
 skills:
-  - "[Tech 1]"
-  - "[Tech 2]"
-  - "[Tech 3]"
-repoUrl: "https://github.com/yourusername/project-2"
+  - "Time-Series"
+  - "XGBoost"
+  - "Statistical Feature Engineering"
+  - "Machine Learning"
 ---
 
 ## Project overview
 
-[Placeholder] Describe what this project is and who it helps.
+Competed in the Qube Research & Technologies challenge focused on predicting asset allocation performance from financial tabular data with very low signal-to-noise ratios.
 
 ## Story and approach
 
-[Placeholder] Explain your implementation and major milestones.
+Built ensemble models combining statistical feature engineering, XGBoost, and neural baselines to extract robust signals from noisy, high-dimensional inputs.
 
 ## Images and media
 
-[Placeholder image block 1]
-
-[Placeholder image block 2]
+![Placeholder project figure](/images/projects/placeholder-cover.svg)
 
 ## Next steps
 
-[Placeholder] Mention future work and improvements.
+[Placeholder] Add model comparison tables, validation strategy notes, and leaderboard outcomes if you want to publish them.

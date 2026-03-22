@@ -1,30 +1,28 @@
 ---
-title: "[Project Name 3]"
-description: "[Short description of your third featured project.]"
+title: "ArchaicGPT -- Transformer from Scratch"
+description: "Implemented a GPT-style Transformer from the ground up to build a mechanistic understanding of sequence modeling."
 publishedAt: "2026-01-20"
 coverImage: "/images/projects/placeholder-cover.svg"
-coverImageAlt: "Placeholder cover for project 3"
+coverImageAlt: "ArchaicGPT project cover"
 skills:
-  - "[Tech 1]"
-  - "[Tech 2]"
-  - "[Tech 3]"
-repoUrl: "https://github.com/yourusername/project-3"
+  - "Deep Learning"
+  - "Transformers"
+  - "Self-Attention"
+  - "Sequence Modeling"
 ---
 
 ## Project overview
 
-[Placeholder] Share context and expected outcomes.
+Built a GPT-style transformer without high-level abstractions to understand core sequence modeling components in detail.
 
 ## Story and approach
 
-[Placeholder] Add architecture notes, stack choices, and key challenges.
+Implemented self-attention, multi-head attention mechanisms, and positional encoding from scratch.
 
 ## Images and media
 
-[Placeholder image block 1]
-
-[Placeholder image block 2]
+![Placeholder project figure](/images/projects/placeholder-cover.svg)
 
 ## Next steps
 
-[Placeholder] Track your roadmap and upcoming ideas.
+[Placeholder] Add training setup details, architecture choices, and evaluation notes.

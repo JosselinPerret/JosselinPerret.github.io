@@ -1,30 +1,30 @@
 ---
-title: "[Project Name 4]"
-description: "[Optional extra project used to test the See more button.]"
+title: "ZenkoLab -- AI for Retinal Imaging"
+description: "Co-founded grant-funded startup project applying deep learning to noisy retinal imaging data."
 publishedAt: "2025-12-10"
 coverImage: "/images/projects/placeholder-cover.svg"
-coverImageAlt: "Placeholder cover for project 4"
+coverImageAlt: "ZenkoLab project cover"
 skills:
-  - "[Tech 1]"
-  - "[Tech 2]"
-  - "[Tech 3]"
-repoUrl: "https://github.com/yourusername/project-4"
+  - "Computer Vision"
+  - "Vision Transformer"
+  - "Medical Imaging"
+  - "Model Interpretability"
 ---
 
 ## Project overview
 
-[Placeholder] Add project summary and objectives.
+Worked on an AI and medical imaging startup project in partnership with the Hopital National de 15-20. Built data and validation workflows for fundus and OCT retinal images at scale.
 
 ## Story and approach
 
-[Placeholder] Add implementation details and lessons learned.
+Fine-tuned RETFound and built a hybrid architecture combining ViT, EfficientNet, and Random Forest. Resume-reported metrics include 99.6% sensitivity on diabetic retinopathy and 98.6% on AMD detection.
+
+Integrated interpretability tooling (Integrated Gradients, Grad-CAM, and LIME) to inspect model behavior in a safety-critical context.
 
 ## Images and media
 
-[Placeholder image block 1]
-
-[Placeholder image block 2]
+![Placeholder project figure](/images/projects/placeholder-cover.svg)
 
 ## Next steps
 
-[Placeholder] Add what comes next for this project.
+[Placeholder] Add deployment lessons, regulatory considerations, and updated model performance snapshots.
