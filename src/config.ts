@@ -1,13 +1,13 @@
 export const siteConfig = {
-  name: "[Josselin Perret]",
-  title: "[Student @ CentraleSupélec & ESSEC Business School]",
+  name: "Josselin Perret",
+  title: "Student @ CentraleSupélec & ESSEC Business School",
   description: "[Short description for your portfolio website]",
   accentColor: "#1d4ed8",
   social: {
-    email: "[josselinprrt@gmail.com]",
-    linkedin: "[https://www.linkedin.com/in/josselin-perret/]",
-    twitter: "[https://x.com/josselinperret]",
-    github: "[https://github.com/JosselinPerret]",
+    email: "josselinprrt@gmail.com]",
+    linkedin: "https://www.linkedin.com/in/josselin-perret/",
+    twitter: "https://x.com/josselinperret",
+    github: "https://github.com/JosselinPerret",
   },
   aboutMe:
     "[Write a short bio about your background, what you build, and what kind of opportunities interest you.]",
