@@ -4,7 +4,7 @@ export const siteConfig = {
   description: "[Short description for your portfolio website]",
   accentColor: "#1d4ed8",
   social: {
-    email: "josselinprrt@gmail.com]",
+    email: "josselinprrt@gmail.com",
     linkedin: "https://www.linkedin.com/in/josselin-perret/",
     twitter: "https://x.com/josselinperret",
     github: "https://github.com/JosselinPerret",
