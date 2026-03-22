@@ -2,6 +2,8 @@
 title: "[Project Name 1]"
 description: "[Short summary for the homepage and projects list.]"
 publishedAt: "2026-03-01"
+coverImage: "/images/projects/placeholder-cover.svg"
+coverImageAlt: "Placeholder cover for project 1"
 skills:
   - "[Tech 1]"
   - "[Tech 2]"

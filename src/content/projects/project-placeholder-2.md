@@ -2,6 +2,8 @@
 title: "[Project Name 2]"
 description: "[Brief project summary with outcome or impact.]"
 publishedAt: "2026-02-15"
+coverImage: "/images/projects/placeholder-cover.svg"
+coverImageAlt: "Placeholder cover for project 2"
 skills:
   - "[Tech 1]"
   - "[Tech 2]"

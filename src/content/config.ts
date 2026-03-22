@@ -7,6 +7,8 @@ const projects = defineCollection({
     description: z.string(),
     publishedAt: z.coerce.date(),
     skills: z.array(z.string()).default([]),
+    coverImage: z.string().optional(),
+    coverImageAlt: z.string().optional(),
     repoUrl: z.string().url().optional(),
   }),
 });

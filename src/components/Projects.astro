@@ -34,6 +34,15 @@ const hasMoreProjects = projects.length > 3;
                       href={`/projects/${project.slug}`}
                       class="block relative p-4 sm:p-6 md:p-8 bg-gray-50 rounded-xl sm:rounded-2xl border border-gray-200 transition-all duration-300 hover:bg-white hover:shadow-xl hover:border-gray-300 hover:-translate-y-1"
                     >
+                      <div class="mb-5 overflow-hidden rounded-lg border border-gray-200 bg-white">
+                        <img
+                          src={project.data.coverImage ?? "/images/projects/placeholder-cover.svg"}
+                          alt={project.data.coverImageAlt ?? `${project.data.title} cover image`}
+                          class="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+                          loading="lazy"
+                        />
+                      </div>
+
                       <div class="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center bg-gray-900 rounded-full text-white transition-all duration-300 group-hover:bg-gray-700">
                         <svg
                           class="w-4 h-4 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

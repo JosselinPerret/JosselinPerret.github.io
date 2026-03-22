@@ -2,6 +2,8 @@
 title: "[Project Name 3]"
 description: "[Short description of your third featured project.]"
 publishedAt: "2026-01-20"
+coverImage: "/images/projects/placeholder-cover.svg"
+coverImageAlt: "Placeholder cover for project 3"
 skills:
   - "[Tech 1]"
   - "[Tech 2]"

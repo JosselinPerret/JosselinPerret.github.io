@@ -2,6 +2,8 @@
 title: "[Project Name 4]"
 description: "[Optional extra project used to test the See more button.]"
 publishedAt: "2025-12-10"
+coverImage: "/images/projects/placeholder-cover.svg"
+coverImageAlt: "Placeholder cover for project 4"
 skills:
   - "[Tech 1]"
   - "[Tech 2]"
