@@ -1,0 +1,8 @@
+---
+import PlotlyGraph from "../PlotlyGraph.astro";
+import figures from "./hyperbolic_figures.json";
+
+const { data, layout } = figures.mse_gap;
+---
+
+<PlotlyGraph id="mse-gap" data={data} layout={layout} />

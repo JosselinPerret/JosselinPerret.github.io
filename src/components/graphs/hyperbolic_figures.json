@@ -1,0 +1,512 @@
+{
+  "capacity_curve": {
+    "data": [
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Hyperbolic H^d",
+        "x": [2, 4, 8, 16, 32],
+        "y": [12.115, 11.299, 9.933, 9.902, 11.195],
+        "line": { "color": "#4C72B0", "width": 2.5 },
+        "marker": { "size": 10, "symbol": "circle" },
+        "hovertemplate": "d₂ = %{x}<br>MSE = %{y:.3f}<extra>Hyperbolic</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Euclidean R^d",
+        "x": [2, 4, 8, 16, 32],
+        "y": [11.332, 10.360, 10.246, 10.508, 10.748],
+        "line": { "color": "#DD8452", "width": 2.5, "dash": "dash" },
+        "marker": { "size": 10, "symbol": "square" },
+        "hovertemplate": "d₂ = %{x}<br>MSE = %{y:.3f}<extra>Euclidean</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines",
+        "name": "Sarkar threshold log₂(n) ≈ 10.4",
+        "x": [10.4, 10.4],
+        "y": [9.5, 12.5],
+        "line": { "color": "#888", "width": 1.5, "dash": "dot" },
+        "hoverinfo": "skip"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines",
+        "name": "Empirical crossover d₂* ≈ 7",
+        "x": [7, 7],
+        "y": [9.5, 12.5],
+        "line": { "color": "#2ca02c", "width": 1.5, "dash": "dash" },
+        "hoverinfo": "skip"
+      }
+    ],
+    "layout": {
+      "title": {
+        "text": "Capacity curve: H^d₂ vs R^d₂",
+        "font": { "size": 16 }
+      },
+      "xaxis": {
+        "title": "Latent dimension d₂",
+        "type": "log",
+        "tickvals": [2, 4, 8, 16, 32],
+        "ticktext": ["2", "4", "8", "16", "32"],
+        "dtick": 1
+      },
+      "yaxis": {
+        "title": "Reconstruction MSE (test set)",
+        "range": [9.4, 12.5]
+      },
+      "legend": { "x": 0.6, "y": 0.98 },
+      "hovermode": "x unified",
+      "annotations": [
+        {
+          "x": 10.4, "y": 12.3,
+          "xref": "x", "yref": "y",
+          "text": "Sarkar<br>threshold",
+          "showarrow": true,
+          "arrowhead": 2,
+          "ax": 30, "ay": -20,
+          "font": { "size": 11, "color": "#888" }
+        },
+        {
+          "x": 7, "y": 9.7,
+          "xref": "x", "yref": "y",
+          "text": "d₂* ≈ 7<br>(empirical)",
+          "showarrow": true,
+          "arrowhead": 2,
+          "ax": -40, "ay": 30,
+          "font": { "size": 11, "color": "#2ca02c" }
+        }
+      ],
+      "margin": { "t": 60, "b": 60, "l": 70, "r": 30 }
+    }
+  },
+
+  "mse_gap": {
+    "data": [
+      {
+        "type": "bar",
+        "name": "MSE gap (Euclidean − Hyperbolic)",
+        "x": ["d₂=2", "d₂=4", "d₂=8", "d₂=16", "d₂=32"],
+        "y": [-0.783, -0.939, 0.313, 0.606, -0.447],
+        "marker": {
+          "color": [-0.783, -0.939, 0.313, 0.606, -0.447],
+          "colorscale": [
+            [0, "#DD8452"],
+            [0.5, "#f0f0f0"],
+            [1, "#4C72B0"]
+          ],
+          "cmin": -1.0,
+          "cmax": 1.0,
+          "line": { "color": "#333", "width": 0.5 }
+        },
+        "hovertemplate": "%{x}<br>Gap = %{y:+.3f}<br>%{customdata}<extra></extra>",
+        "customdata": [
+          "Euclidean wins",
+          "Euclidean wins",
+          "Hyperbolic wins",
+          "Hyperbolic wins",
+          "Euclidean wins"
+        ],
+        "text": ["-0.783", "-0.939", "+0.313", "+0.606", "-0.447"],
+        "textposition": "outside"
+      }
+    ],
+    "layout": {
+      "title": {
+        "text": "Hyperbolic advantage by dimension",
+        "font": { "size": 16 }
+      },
+      "xaxis": { "title": "Latent dimension d₂" },
+      "yaxis": {
+        "title": "MSE gap (Euclidean − Hyperbolic)",
+        "zeroline": true,
+        "zerolinecolor": "#000",
+        "zerolinewidth": 2
+      },
+      "shapes": [
+        {
+          "type": "line",
+          "x0": 1.5, "x1": 1.5,
+          "y0": -1.1, "y1": 0.8,
+          "line": { "color": "#888", "width": 1.5, "dash": "dot" }
+        }
+      ],
+      "annotations": [
+        {
+          "x": 1.5, "y": 0.75,
+          "xref": "x", "yref": "y",
+          "text": "log₂(n) ≈ 10.4",
+          "showarrow": false,
+          "font": { "size": 10, "color": "#888" }
+        }
+      ],
+      "margin": { "t": 60, "b": 60, "l": 80, "r": 30 }
+    }
+  },
+
+  "grad_attenuation": {
+    "data": [
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "E[e^τ] — gradient attenuation",
+        "x": [2, 4, 8, 16, 32],
+        "y": [0.736, 20.445, 0.472, 0.425, 0.696],
+        "yaxis": "y",
+        "line": { "color": "#c0392b", "width": 2.5 },
+        "marker": { "size": 10, "symbol": "diamond", "color": "#c0392b" },
+        "hovertemplate": "d₂ = %{x}<br>E[e^τ] = %{y:.3f}<extra>Grad. attenuation</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "mean(μ_τ^q)",
+        "x": [2, 4, 8, 16, 32],
+        "y": [-0.522, 0.070, -0.770, -0.876, -0.383],
+        "yaxis": "y2",
+        "line": { "color": "#4C72B0", "width": 2, "dash": "dash" },
+        "marker": { "size": 8, "symbol": "circle", "color": "#4C72B0" },
+        "hovertemplate": "d₂ = %{x}<br>mean(μ_τ) = %{y:.3f}<extra>Mean tau</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines",
+        "name": "Ideal (E[e^τ] = 1)",
+        "x": [2, 32],
+        "y": [1, 1],
+        "yaxis": "y",
+        "line": { "color": "#c0392b", "width": 1, "dash": "dot" },
+        "hoverinfo": "skip"
+      }
+    ],
+    "layout": {
+      "title": {
+        "text": "τ-collapse diagnosis: gradient attenuation across d₂",
+        "font": { "size": 16 }
+      },
+      "xaxis": {
+        "title": "Latent dimension d₂",
+        "type": "log",
+        "tickvals": [2, 4, 8, 16, 32],
+        "ticktext": ["2", "4", "8", "16", "32"]
+      },
+      "yaxis": {
+        "title": "E[e^τ] (effective b-gradient scale)",
+        "titlefont": { "color": "#c0392b" },
+        "tickfont": { "color": "#c0392b" }
+      },
+      "yaxis2": {
+        "title": "mean(μ_τ^q)",
+        "overlaying": "y",
+        "side": "right",
+        "titlefont": { "color": "#4C72B0" },
+        "tickfont": { "color": "#4C72B0" }
+      },
+      "annotations": [
+        {
+          "x": 4, "y": 20.445,
+          "xref": "x", "yref": "y",
+          "text": "Instability:<br>E[e^τ] = 20.4",
+          "showarrow": true,
+          "arrowhead": 2,
+          "ax": 40, "ay": -30,
+          "font": { "size": 11, "color": "#c0392b" }
+        }
+      ],
+      "legend": { "x": 0.55, "y": 0.98 },
+      "margin": { "t": 60, "b": 60, "l": 70, "r": 70 }
+    }
+  },
+
+  "linear_probes": {
+    "data": [
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Depth from τ (hyperbolic)",
+        "x": [2, 4, 8, 16, 32],
+        "y": [0.844, 0.917, 0.752, 0.897, 0.439],
+        "line": { "color": "#4C72B0", "width": 2.5 },
+        "marker": { "size": 10 },
+        "hovertemplate": "d₂ = %{x}<br>Accuracy = %{y:.3f}<extra>Depth from τ</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Branch from b — Hyperbolic (depth 1)",
+        "x": [2, 4, 8, 16, 32],
+        "y": [0.945, 0.727, 1.000, 1.000, 0.995],
+        "line": { "color": "#4C72B0", "width": 2.5, "dash": "dash" },
+        "marker": { "size": 10, "symbol": "diamond" },
+        "hovertemplate": "d₂ = %{x}<br>Accuracy = %{y:.3f}<extra>Branch (hyp)</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Branch from z — Euclidean (depth 1)",
+        "x": [2, 4, 8, 16, 32],
+        "y": [0.995, 1.000, 1.000, 1.000, 1.000],
+        "line": { "color": "#DD8452", "width": 2.5, "dash": "dash" },
+        "marker": { "size": 10, "symbol": "square" },
+        "hovertemplate": "d₂ = %{x}<br>Accuracy = %{y:.3f}<extra>Branch (euc)</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines",
+        "name": "Random baseline (0.25)",
+        "x": [2, 32],
+        "y": [0.25, 0.25],
+        "line": { "color": "#aaa", "width": 1, "dash": "dot" },
+        "hoverinfo": "skip"
+      }
+    ],
+    "layout": {
+      "title": {
+        "text": "Linear probe accuracy — representation vs reconstruction",
+        "font": { "size": 16 }
+      },
+      "xaxis": {
+        "title": "Latent dimension d₂",
+        "type": "log",
+        "tickvals": [2, 4, 8, 16, 32],
+        "ticktext": ["2", "4", "8", "16", "32"]
+      },
+      "yaxis": {
+        "title": "Probe accuracy",
+        "range": [-0.05, 1.1]
+      },
+      "shapes": [
+        {
+          "type": "line",
+          "x0": 10.4, "x1": 10.4,
+          "y0": -0.05, "y1": 1.1,
+          "line": { "color": "#888", "width": 1.5, "dash": "dot" }
+        }
+      ],
+      "annotations": [
+        {
+          "x": 4,
+          "y": 0.727,
+          "xref": "x",
+          "yref": "y",
+          "text": "Branch probe drops<br>at d₂=4 (instability)",
+          "showarrow": true,
+          "arrowhead": 2,
+          "ax": -60,
+          "ay": 30,
+          "font": { "size": 10, "color": "#4C72B0" }
+        }
+      ],
+      "legend": { "x": 0.4, "y": 0.35 },
+      "hovermode": "x unified",
+      "margin": { "t": 60, "b": 60, "l": 70, "r": 30 }
+    }
+  },
+
+  "per_depth_heatmap": {
+    "hyperbolic": {
+      "data": [
+        {
+          "type": "heatmap",
+          "z": [
+            [1.33, 1.31, 0.79, 0.95, 1.59],
+            [8.04, 8.23, 0.96, 1.14, 2.28],
+            [11.27, 9.96, 4.47, 4.77, 9.04],
+            [11.97, 10.55, 9.81, 9.52, 11.04],
+            [11.68, 10.52, 9.68, 9.85, 10.87],
+            [13.46, 13.45, 12.29, 12.02, 12.99]
+          ],
+          "x": ["d₂=2", "d₂=4", "d₂=8", "d₂=16", "d₂=32"],
+          "y": ["depth 0", "depth 1", "depth 2", "depth 3", "depth 4", "depth 5"],
+          "colorscale": "YlOrRd",
+          "reversescale": false,
+          "text": [
+            ["1.3", "1.3", "0.8", "1.0", "1.6"],
+            ["8.0", "8.2", "1.0", "1.1", "2.3"],
+            ["11.3", "10.0", "4.5", "4.8", "9.0"],
+            ["12.0", "10.5", "9.8", "9.5", "11.0"],
+            ["11.7", "10.5", "9.7", "9.9", "10.9"],
+            ["13.5", "13.4", "12.3", "12.0", "13.0"]
+          ],
+          "texttemplate": "%{text}",
+          "hovertemplate": "d₂ = %{x}<br>Depth = %{y}<br>MSE = %{z:.2f}<extra>Hyperbolic</extra>"
+        }
+      ],
+      "layout": {
+        "title": { "text": "Hyperbolic MSE per (depth, d₂)", "font": { "size": 14 } },
+        "xaxis": { "title": "Latent dimension d₂" },
+        "yaxis": { "title": "True depth ℓ" },
+        "margin": { "t": 50, "b": 60, "l": 80, "r": 30 }
+      }
+    },
+    "advantage": {
+      "data": [
+        {
+          "type": "heatmap",
+          "z": [
+            [-0.22, -0.22, 0.72, 0.14, -0.19],
+            [-6.59, -6.68, 0.69, 0.50, -0.60],
+            [-2.20, -6.16, -1.15, -0.47, -3.24],
+            [-2.45, -1.22, -0.47, 0.71, -0.76],
+            [-0.02, 0.01, 0.68, 0.50, -0.37],
+            [-0.26, -0.62, 0.49, 0.95, 0.17]
+          ],
+          "x": ["d₂=2", "d₂=4", "d₂=8", "d₂=16", "d₂=32"],
+          "y": ["depth 0", "depth 1", "depth 2", "depth 3", "depth 4", "depth 5"],
+          "colorscale": "RdBu",
+          "zmid": 0,
+          "text": [
+            ["-0.2", "-0.2", "+0.7", "+0.1", "-0.2"],
+            ["-6.6", "-6.7", "+0.7", "+0.5", "-0.6"],
+            ["-2.2", "-6.2", "-1.2", "-0.5", "-3.2"],
+            ["-2.5", "-1.2", "-0.5", "+0.7", "-0.8"],
+            ["0.0", "0.0", "+0.7", "+0.5", "-0.4"],
+            ["-0.3", "-0.6", "+0.5", "+1.0", "+0.2"]
+          ],
+          "texttemplate": "%{text}",
+          "hovertemplate": "d₂ = %{x}<br>Depth = %{y}<br>Gap = %{z:+.2f}<br>%{customdata}<extra>Advantage</extra>",
+          "customdata": [
+            ["Euc wins", "Euc wins", "Hyp wins", "Hyp wins", "Euc wins"],
+            ["Euc wins", "Euc wins", "Hyp wins", "Hyp wins", "Euc wins"],
+            ["Euc wins", "Euc wins", "Euc wins", "Euc wins", "Euc wins"],
+            ["Euc wins", "Euc wins", "Euc wins", "Hyp wins", "Euc wins"],
+            ["Tie", "Tie", "Hyp wins", "Hyp wins", "Euc wins"],
+            ["Euc wins", "Euc wins", "Hyp wins", "Hyp wins", "Hyp wins"]
+          ]
+        }
+      ],
+      "layout": {
+        "title": {
+          "text": "Advantage map: Euclidean − Hyperbolic<br><sub>Blue = hyperbolic wins, Red = Euclidean wins</sub>",
+          "font": { "size": 14 }
+        },
+        "xaxis": { "title": "Latent dimension d₂" },
+        "yaxis": { "title": "True depth ℓ" },
+        "margin": { "t": 70, "b": 60, "l": 80, "r": 30 }
+      }
+    }
+  },
+
+  "kl_formula_breakdown": {
+    "data": [
+      {
+        "type": "bar",
+        "name": "Height KL",
+        "x": ["d₂=2", "d₂=4", "d₂=8", "d₂=16", "d₂=32"],
+        "y": [0.45, 0.31, 0.52, 0.48, 0.38],
+        "marker": { "color": "#4C72B0" },
+        "hovertemplate": "%{x}<br>Height KL = %{y:.3f}<extra></extra>"
+      },
+      {
+        "type": "bar",
+        "name": "Fibre KL",
+        "x": ["d₂=2", "d₂=4", "d₂=8", "d₂=16", "d₂=32"],
+        "y": [0.62, 1.84, 3.21, 6.88, 14.92],
+        "marker": { "color": "#DD8452" },
+        "hovertemplate": "%{x}<br>Fibre KL = %{y:.3f}<extra></extra>"
+      },
+      {
+        "type": "bar",
+        "name": "Drift term",
+        "x": ["d₂=2", "d₂=4", "d₂=8", "d₂=16", "d₂=32"],
+        "y": [3.12, 8.45, 2.18, 1.94, 2.31],
+        "marker": { "color": "#55A868" },
+        "hovertemplate": "%{x}<br>Drift = %{y:.3f}<extra></extra>"
+      }
+    ],
+    "layout": {
+      "title": {
+        "text": "KL decomposition at convergence by dimension",
+        "font": { "size": 16 }
+      },
+      "barmode": "stack",
+      "xaxis": { "title": "Latent dimension d₂" },
+      "yaxis": { "title": "KL component value" },
+      "annotations": [
+        {
+          "x": "d₂=32",
+          "y": 16,
+          "text": "Fibre term<br>dominates at d₂=32",
+          "showarrow": true,
+          "arrowhead": 2,
+          "ax": -60, "ay": -30,
+          "font": { "size": 10 }
+        }
+      ],
+      "legend": { "x": 0.02, "y": 0.98 },
+      "margin": { "t": 60, "b": 60, "l": 70, "r": 30 }
+    }
+  },
+
+  "rho_comparison": {
+    "data": [
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Hyperbolic ρ_τ",
+        "x": [2, 4, 8, 16, 32],
+        "y": [0.561, 0.433, 0.829, 0.867, 0.251],
+        "line": { "color": "#4C72B0", "width": 2.5 },
+        "marker": { "size": 10 },
+        "hovertemplate": "d₂ = %{x}<br>ρ_τ = %{y:.3f}<extra>Hyperbolic</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines+markers",
+        "name": "Euclidean ρ_euc",
+        "x": [2, 4, 8, 16, 32],
+        "y": [0.491, 0.686, 0.797, 0.921, 0.918],
+        "line": { "color": "#DD8452", "width": 2.5, "dash": "dash" },
+        "marker": { "size": 10, "symbol": "square" },
+        "hovertemplate": "d₂ = %{x}<br>ρ_euc = %{y:.3f}<extra>Euclidean</extra>"
+      },
+      {
+        "type": "scatter",
+        "mode": "lines",
+        "name": "Target ρ = 0.7",
+        "x": [2, 32],
+        "y": [0.7, 0.7],
+        "line": { "color": "#2ca02c", "width": 1, "dash": "dot" },
+        "hoverinfo": "skip"
+      }
+    ],
+    "layout": {
+      "title": {
+        "text": "Depth encoding quality ρ vs dimension d₂",
+        "font": { "size": 16 }
+      },
+      "xaxis": {
+        "title": "Latent dimension d₂",
+        "type": "log",
+        "tickvals": [2, 4, 8, 16, 32],
+        "ticktext": ["2", "4", "8", "16", "32"]
+      },
+      "yaxis": {
+        "title": "Spearman ρ",
+        "range": [-0.05, 1.05]
+      },
+      "shapes": [
+        {
+          "type": "line",
+          "x0": 10.4, "x1": 10.4,
+          "y0": -0.05, "y1": 1.05,
+          "line": { "color": "#888", "width": 1.5, "dash": "dot" }
+        }
+      ],
+      "annotations": [
+        {
+          "x": 32, "y": 0.251,
+          "text": "τ absorbed<br>by fibre at d₂=32",
+          "showarrow": true,
+          "arrowhead": 2,
+          "ax": -60, "ay": -30,
+          "font": { "size": 10, "color": "#4C72B0" }
+        }
+      ],
+      "legend": { "x": 0.05, "y": 0.4 },
+      "hovermode": "x unified",
+      "margin": { "t": 60, "b": 60, "l": 70, "r": 30 }
+    }
+  }
+}

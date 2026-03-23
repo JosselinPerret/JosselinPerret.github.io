@@ -1,0 +1,36 @@
+---
+import PlotlyGraph from "../PlotlyGraph.astro";
+import figures from "./hyperbolic_figures.json";
+
+const hyperbolic = figures.per_depth_heatmap.hyperbolic;
+const advantage = figures.per_depth_heatmap.advantage;
+
+const hyperbolicTrace = hyperbolic.data[0];
+const advantageTrace = advantage.data[0];
+
+const euclideanZ = hyperbolicTrace.z.map((row, rowIndex) =>
+  row.map((value, colIndex) => value + advantageTrace.z[rowIndex][colIndex]),
+);
+
+const euclidean = {
+  data: [
+    {
+      ...hyperbolicTrace,
+      z: euclideanZ,
+      text: euclideanZ.map((row) => row.map((value) => value.toFixed(1))),
+      hovertemplate:
+        "d₂ = %{x}<br>Depth = %{y}<br>MSE = %{z:.2f}<extra>Euclidean</extra>",
+    },
+  ],
+  layout: {
+    ...hyperbolic.layout,
+    title: { text: "Euclidean MSE per (depth, d₂)", font: { size: 14 } },
+  },
+};
+---
+
+<div class="grid gap-6 md:grid-cols-3">
+  <PlotlyGraph id="heatmap-hyperbolic" data={hyperbolic.data} layout={hyperbolic.layout} />
+  <PlotlyGraph id="heatmap-euclidean" data={euclidean.data} layout={euclidean.layout} />
+  <PlotlyGraph id="heatmap-advantage" data={advantage.data} layout={advantage.layout} />
+</div>

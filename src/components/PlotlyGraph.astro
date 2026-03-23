@@ -26,7 +26,7 @@ const defaultConfig = {
 };
 ---
 
-<div id={id} class={`plotly-graph ${className}`}></div>
+<div id={id} class={`plotly-graph rounded-xl border border-gray-200 bg-white p-2 shadow-sm ${className}`}></div>
 
 <script is:inline src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 
@@ -55,6 +55,6 @@ const defaultConfig = {
   .plotly-graph {
     width: 100%;
     min-height: 400px;
-    margin: 2rem 0;
+    margin: 1.25rem 0;
   }
 </style>

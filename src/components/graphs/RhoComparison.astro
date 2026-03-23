@@ -1,0 +1,8 @@
+---
+import PlotlyGraph from "../PlotlyGraph.astro";
+import figures from "./hyperbolic_figures.json";
+
+const { data, layout } = figures.rho_comparison;
+---
+
+<PlotlyGraph id="rho-comparison" data={data} layout={layout} />

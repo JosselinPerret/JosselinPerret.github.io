@@ -1,48 +1,8 @@
 ---
 import PlotlyGraph from "../PlotlyGraph.astro";
+import figures from "./hyperbolic_figures.json";
 
-// H-RSSM capacity test data from the article
-const d2Values = [2, 4, 8, 16, 32];
-const mseHyperbolic = [12.12, 11.30, 9.93, 9.90, 11.20];
-const mseEuclidean = [11.33, 10.36, 10.25, 10.51, 10.75];
-
-const data = [
-  {
-    x: d2Values,
-    y: mseHyperbolic,
-    mode: "lines+markers",
-    name: "Hyperbolic (ℍᵈ)",
-    line: { color: "#1d4ed8", width: 3 },
-    marker: { size: 10 },
-  },
-  {
-    x: d2Values,
-    y: mseEuclidean,
-    mode: "lines+markers",
-    name: "Euclidean (ℝᵈ)",
-    line: { color: "#dc2626", width: 3, dash: "dash" },
-    marker: { size: 10 },
-  },
-];
-
-const layout = {
-  title: "Reconstruction MSE vs Latent Dimension",
-  xaxis: {
-    title: "Latent Dimension (d₂)",
-    type: "log",
-    tickvals: d2Values,
-    ticktext: d2Values.map(String),
-  },
-  yaxis: {
-    title: "Test MSE",
-    range: [9, 13],
-  },
-  hovermode: "x unified",
-  legend: {
-    x: 0.7,
-    y: 0.95,
-  },
-};
+const { data, layout } = figures.capacity_curve;
 ---
 
 <PlotlyGraph id="capacity-curve" data={data} layout={layout} />

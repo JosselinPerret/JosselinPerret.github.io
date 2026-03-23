@@ -14,6 +14,10 @@ skills:
 import CapacityCurve from "../../components/graphs/CapacityCurve.astro";
 import GradientAttenuation from "../../components/graphs/GradientAttenuation.astro";
 import LinearProbes from "../../components/graphs/LinearProbes.astro";
+import RhoComparison from "../../components/graphs/RhoComparison.astro";
+import MseGap from "../../components/graphs/MseGap.astro";
+import PerDepthHeatmaps from "../../components/graphs/PerDepthHeatmaps.astro";
+import KlBreakdown from "../../components/graphs/KlBreakdown.astro";
 
 ## Project overview
 
@@ -184,7 +188,7 @@ However, two things undermined this result:
  
 ---
  
-`[FIGURE PLACEHOLDER — fig1_tau_vs_depth.pdf]`
+<RhoComparison />
 *Violin plots of $\mu_\tau^q$ per depth level. Reference condition (left) shows partial ordering; flat tree (right) shows clean separation on only 3 levels — confirming the negative control failure.*
  
 ---
@@ -203,6 +207,10 @@ Since both models had ample capacity at $d_2 = 16$, I ran a full sweep $d_2 \in 
 
 <GradientAttenuation />
 
+<MseGap />
+
+---
+
 *MSE gap (Euclidean − Hyperbolic) and gradient attenuation. Positive gap = hyperbolic wins. The gap changes sign between $d_2 = 4$ and $d_2 = 8$, with empirical crossover $d_2^* \approx 7$, close to the Sarkar threshold $\log_2(1365) \approx 10.4$. The gradient attenuation spike at $d_2 = 4$ (value 20.4) reveals an instability regime.*
 
 ---
@@ -219,7 +227,7 @@ The results are summarised below. **Three distinct regimes emerge**, not a simpl
  
 ---
  
-`[FIGURE PLACEHOLDER — fig4_heatmap.pdf]`
+<PerDepthHeatmaps />
 *Per-depth MSE heatmap. Left: hyperbolic. Centre: Euclidean. Right: advantage map (blue = hyperbolic wins, red = Euclidean wins). The hyperbolic model struggles most at depth 1 for small $d_2$ — consistent with the gradient attenuation mechanism described below.*
  
 ---
@@ -230,7 +238,7 @@ The results are summarised below. **Three distinct regimes emerge**, not a simpl
 
 ---
  
-`[FIGURE PLACEHOLDER — fig5_tau_distributions.pdf]`
+<KlBreakdown />
 *Kernel density estimates of $\mu_\tau^q$ per depth level across all $d_2$. The pathological case at $d_2 = 4$ ($\mathbb{E}[e^\tau] = 20.4$) is clearly visible: $\tau$ spreads from $-4$ to $+6$ instead of forming depth-aligned clusters.*
  
 ---
