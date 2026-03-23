@@ -1,0 +1,83 @@
+---
+// Quick Reference: Common Plotly Graph Types
+// Copy the pattern you need into your component
+
+import PlotlyGraph from "../PlotlyGraph.astro";
+
+// ============================================
+// 1. SCATTER PLOT
+// ============================================
+const scatterData = [{
+  x: [1, 2, 3, 4],
+  y: [10, 11, 12, 13],
+  mode: "markers",
+  marker: { size: 12, color: "#1d4ed8" },
+}];
+
+// ============================================
+// 2. BAR CHART
+// ============================================
+const barData = [{
+  x: ["A", "B", "C"],
+  y: [20, 14, 23],
+  type: "bar",
+  marker: { color: "#1d4ed8" },
+}];
+
+// ============================================
+// 3. HEATMAP
+// ============================================
+const heatmapData = [{
+  z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+  type: "heatmap",
+  colorscale: "Blues",
+}];
+
+// ============================================
+// 4. 3D SURFACE
+// ============================================
+const surfaceData = [{
+  z: [[1, 2, 3], [2, 3, 4], [3, 4, 5]],
+  type: "surface",
+}];
+
+// ============================================
+// 5. CONTOUR PLOT
+// ============================================
+const contourData = [{
+  z: [[1, 2, 3], [2, 3, 4], [3, 4, 5]],
+  type: "contour",
+  colorscale: "Viridis",
+}];
+
+// ============================================
+// 6. BOX PLOT
+// ============================================
+const boxData = [{
+  y: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  type: "box",
+  name: "Dataset",
+}];
+
+// ============================================
+// 7. VIOLIN PLOT
+// ============================================
+const violinData = [{
+  y: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  type: "violin",
+  name: "Distribution",
+}];
+
+// Use whichever one you need:
+const data = scatterData; // Change this to the type you want
+const layout = { title: "Your Title" };
+---
+
+<!-- Uncomment to use:
+<PlotlyGraph id="reference-graph" data={data} layout={layout} />
+-->
+
+<div class="text-sm text-gray-600 p-4 border rounded-lg">
+  <p><strong>Quick Reference Component</strong></p>
+  <p>Copy the data pattern you need from this file into your own component.</p>
+</div>

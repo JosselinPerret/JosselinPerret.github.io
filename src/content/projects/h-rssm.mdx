@@ -11,6 +11,10 @@ skills:
   - "Hyperbolic Geometry"
 ---
 
+import CapacityCurve from "../../components/graphs/CapacityCurve.astro";
+import GradientAttenuation from "../../components/graphs/GradientAttenuation.astro";
+import LinearProbes from "../../components/graphs/LinearProbes.astro";
+
 ## Project overview
 
 Introduced the horospherical Gaussian, a distribution family on hyperbolic space with closed-form KL divergence in O(d), designed to support ELBO-based training of hyperbolic world models at computational cost comparable to Euclidean baselines.
@@ -190,15 +194,17 @@ However, two things undermined this result:
 Since both models had ample capacity at $d_2 = 16$, I ran a full sweep $d_2 \in \{2, 4, 8, 16, 32\}$ to find whether the hyperbolic advantage appears when capacity is genuinely constrained.
  
 ---
- 
-`[FIGURE PLACEHOLDER — fig1_capacity_curve.pdf]`
-*Left: reconstruction MSE vs $d_2$ for both models. The hyperbolic curve is non-monotone — a U-shape with minimum at $d_2 = 16$. Right: depth encoding $\rho$ vs $d_2$.*
- 
+
+<CapacityCurve />
+
+*Reconstruction MSE vs latent dimension. The hyperbolic curve is non-monotone — a U-shape with minimum at $d_2 = 16$. Hover over the graph to see exact values.*
+
 ---
- 
-`[FIGURE PLACEHOLDER — fig2_gap_and_attenuation.pdf]`
-*Left: MSE gap (Euclidean − Hyperbolic) per $d_2$. Positive = hyperbolic wins. The gap changes sign between $d_2 = 4$ and $d_2 = 8$, with empirical crossover $d_2^* \approx 7$, close to the Sarkar threshold $\log_2(1365) \approx 10.4$. Right: gradient attenuation $\mathbb{E}[e^{\tau_t}]$ — a spike at $d_2 = 4$ (value 20.4) reveals an instability regime.*
- 
+
+<GradientAttenuation />
+
+*MSE gap (Euclidean − Hyperbolic) and gradient attenuation. Positive gap = hyperbolic wins. The gap changes sign between $d_2 = 4$ and $d_2 = 8$, with empirical crossover $d_2^* \approx 7$, close to the Sarkar threshold $\log_2(1365) \approx 10.4$. The gradient attenuation spike at $d_2 = 4$ (value 20.4) reveals an instability regime.*
+
 ---
  
 The results are summarised below. **Three distinct regimes emerge**, not a simple monotone relationship:
@@ -217,10 +223,11 @@ The results are summarised below. **Three distinct regimes emerge**, not a simpl
 *Per-depth MSE heatmap. Left: hyperbolic. Centre: Euclidean. Right: advantage map (blue = hyperbolic wins, red = Euclidean wins). The hyperbolic model struggles most at depth 1 for small $d_2$ — consistent with the gradient attenuation mechanism described below.*
  
 ---
- 
-`[FIGURE PLACEHOLDER — fig3_linear_probes.pdf]`
-*Linear probe accuracies. Left: predicting depth from $\tau$ alone. Right: predicting branch from $b$ alone at depth 1. The branch probe at $d_2 = 4$ drops to 0.73 for the hyperbolic model while staying at 1.0 for Euclidean — evidence that the instability at $d_2 = 4$ is specifically in the fibre coordinate $b$.*
- 
+
+<LinearProbes />
+
+*Linear probe accuracies showing representation quality. The branch probe at $d_2 = 4$ drops to 0.73 for the hyperbolic model while staying at 1.0 for Euclidean — evidence that the instability at $d_2 = 4$ is specifically in the fibre coordinate $b$.*
+
 ---
  
 `[FIGURE PLACEHOLDER — fig5_tau_distributions.pdf]`
