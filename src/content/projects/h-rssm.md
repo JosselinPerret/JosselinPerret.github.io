@@ -2,7 +2,7 @@
 title: "Hyperbolic Recurrent State-Space Model (H-RSSM)"
 description: "Personal research on hyperbolic latent spaces for world models and variational optimization behavior."
 publishedAt: "2026-03-01"
-coverImage: "/images/projects/placeholder-cover.svg"
+coverImage: "/images/projects/h-rssm.png"
 coverImageAlt: "H-RSSM project cover"
 skills:
   - "World Models"
