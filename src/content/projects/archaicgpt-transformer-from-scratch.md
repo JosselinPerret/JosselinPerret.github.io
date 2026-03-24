@@ -11,6 +11,9 @@ skills:
   - "Sequence Modeling"
 ---
 
+> **Status:** Article in progress.
+> A clearer write-up is coming soon.
+
 ## Project overview
 
 Built a GPT-style transformer without high-level abstractions to understand core sequence modeling components in detail.

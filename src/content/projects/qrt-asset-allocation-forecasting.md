@@ -11,6 +11,9 @@ skills:
   - "Machine Learning"
 ---
 
+> **Status:** Article in progress.
+> A clearer write-up is coming soon.
+
 ## Project overview
 
 Competed in the Qube Research & Technologies challenge focused on predicting asset allocation performance from financial tabular data with very low signal-to-noise ratios.
