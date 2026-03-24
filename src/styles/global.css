@@ -29,6 +29,11 @@ body {
   padding-left: 1.25rem;
 }
 
+.project-content ol {
+  list-style: none;
+  padding-left: 0;
+}
+
 .project-content a {
   text-decoration: underline;
 }
