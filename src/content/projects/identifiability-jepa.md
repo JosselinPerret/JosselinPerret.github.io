@@ -2,7 +2,7 @@
 title: "Identifiability of Joint-Embedding Predictive Architectures (JEPA)"
 description: "Research article in progress on identifiability conditions and failure modes in JEPA-style representation learning."
 publishedAt: "2026-03-24"
-coverImage: "/images/projects/placeholder-cover.svg"
+coverImage: "/images/projects/identifiability-jepa.png"
 coverImageAlt: "JEPA identifiability project cover"
 skills:
   - "Self-Supervised Learning"
