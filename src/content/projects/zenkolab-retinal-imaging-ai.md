@@ -24,10 +24,3 @@ Fine-tuned RETFound and built a hybrid architecture combining ViT, EfficientNet,
 
 Integrated interpretability tooling (Integrated Gradients, Grad-CAM, and LIME) to inspect model behavior in a safety-critical context.
 
-## Images and media
-
-![Placeholder project figure](/images/projects/placeholder-cover.svg)
-
-## Next steps
-
-[Placeholder] Add deployment lessons, regulatory considerations, and updated model performance snapshots.

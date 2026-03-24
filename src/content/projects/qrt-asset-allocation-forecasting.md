@@ -22,10 +22,3 @@ Competed in the Qube Research & Technologies challenge focused on predicting ass
 
 Built ensemble models combining statistical feature engineering, XGBoost, and neural baselines to extract robust signals from noisy, high-dimensional inputs.
 
-## Images and media
-
-![Placeholder project figure](/images/projects/placeholder-cover.svg)
-
-## Next steps
-
-[Placeholder] Add model comparison tables, validation strategy notes, and leaderboard outcomes if you want to publish them.

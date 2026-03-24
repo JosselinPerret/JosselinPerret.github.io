@@ -22,10 +22,3 @@ Built a GPT-style transformer without high-level abstractions to understand core
 
 Implemented self-attention, multi-head attention mechanisms, and positional encoding from scratch.
 
-## Images and media
-
-![Placeholder project figure](/images/projects/placeholder-cover.svg)
-
-## Next steps
-
-[Placeholder] Add training setup details, architecture choices, and evaluation notes.
