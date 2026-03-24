@@ -1,5 +1,5 @@
 ---
-title: "ENS x QRT Challenge Data -- Asset Allocation Performance Forecasting"
+title: "ENS x QRT Challenge Data - Asset Allocation Performance Forecasting"
 description: "Competition project on forecasting asset allocation performance from low signal-to-noise financial data."
 publishedAt: "2026-02-15"
 coverImage: "/images/projects/placeholder-cover.svg"

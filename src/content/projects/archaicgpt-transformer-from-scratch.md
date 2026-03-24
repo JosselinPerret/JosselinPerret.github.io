@@ -1,5 +1,5 @@
 ---
-title: "ArchaicGPT -- Transformer from Scratch"
+title: "ArchaicGPT - Transformer from Scratch"
 description: "Implemented a GPT-style Transformer from the ground up to build a mechanistic understanding of sequence modeling."
 publishedAt: "2026-01-20"
 coverImage: "/images/projects/placeholder-cover.svg"

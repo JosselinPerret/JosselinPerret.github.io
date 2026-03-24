@@ -1,5 +1,5 @@
 ---
-title: "ZenkoLab -- AI for Retinal Imaging"
+title: "ZenkoLab - AI for Ophtalmology"
 description: "Co-founded grant-funded startup project applying deep learning to noisy retinal imaging data."
 publishedAt: "2025-12-10"
 coverImage: "/images/projects/placeholder-cover.svg"
