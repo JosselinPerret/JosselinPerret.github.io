@@ -19,6 +19,29 @@ import MseGap from "../../components/graphs/MseGap.astro";
 import PerDepthHeatmaps from "../../components/graphs/PerDepthHeatmaps.astro";
 import KlBreakdown from "../../components/graphs/KlBreakdown.astro";
 
+<style>
+  h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-top: 4rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.5px;
+    border-bottom: 3px solid var(--accent-color, #3b82f6);
+    padding-bottom: 0.75rem;
+  }
+  h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  hr {
+    margin: 3rem 0;
+    border: none;
+    border-top: 2px solid #e5e7eb;
+  }
+</style>
+
 ## Project Overview
 
 Introduced the horospherical Gaussian, a distribution family on hyperbolic space with closed-form KL divergence in $O(d)$, designed to support ELBO-based training of hyperbolic world models at computational cost comparable to Euclidean baselines.
@@ -34,32 +57,32 @@ Introduced the horospherical Gaussian, a distribution family on hyperbolic space
 
 ## Table of Contents
 
-1. [Background and Motivation](#background-and-motivation)
-2. [The Technical Obstacle](#the-technical-obstacle-intractable-kl-divergences)
-3. [The Horospherical Gaussian](#the-horospherical-gaussian)
+1. [Background and Motivation](#1-background-and-motivation)
+2. [The Technical Obstacle](#2-the-technical-obstacle-intractable-kl-divergences)
+3. [The Horospherical Gaussian](#3-the-horospherical-gaussian)
    - [Setting](#setting)
    - [Definition](#definition)
    - [The Key Cancellation](#the-key-cancellation-why-the-kl-is-tractable)
    - [Closed-Form KL](#closed-form-kl)
    - [Reparameterisation](#reparameterisation)
    - [Approximation Quality](#approximation-quality)
-4. [Experimental Setup](#experimental-setup)
+4. [Experimental Setup](#4-experimental-setup)
    - [Environment](#environment)
    - [Model](#model)
    - [Metrics](#metrics)
-5. [Results](#results)
+5. [Results](#5-results)
    - [Experiment 1: Does $\tau$ Spontaneously Encode Depth?](#experiment-1-does-tau-spontaneously-encode-depth)
    - [Experiment 2: Capacity Test](#experiment-2-capacity-test--mathbbhd_2-vs-mathbbrd_2-under-dimensional-constraint)
    - [The Three Failure Regimes](#the-three-failure-regimes)
-6. [What This Suggests](#what-this-suggests)
-7. [Assumptions and Limitations](#assumptions-and-limitations)
-8. [Theoretical Work](#theoretical-work)
-9. [Code and Reproducibility](#code-and-reproducibility)
-10. [References](#references)
+6. [What This Suggests](#6-what-this-suggests)
+7. [Assumptions and Limitations](#7-assumptions-and-limitations)
+8. [Theoretical Work](#8-theoretical-work)
+9. [Code and Reproducibility](#9-code-and-reproducibility)
+10. [References](#10-references)
 
 ---
 
-## Background and Motivation
+## 1. Background and Motivation
 
 World models for reinforcement learning agents — architectures like [DreamerV3](https://arxiv.org/abs/2301.04104) or [IRIS](https://arxiv.org/abs/2209.00588) — learn a compact representation of the environment together with a transition kernel over that representation. The geometry of the latent space is a fundamental but often overlooked design choice.
  
@@ -73,7 +96,7 @@ This article documents an attempt to answer it — including the obstacles encou
  
 ---
 
-## The Technical Obstacle: Intractable KL Divergences
+## 2. The Technical Obstacle: Intractable KL Divergences
 
 Before any experiment, there is a hard computational problem to solve.
  
@@ -95,7 +118,7 @@ This is the problem I set out to fix first.
  
 ---
 
-## The Horospherical Gaussian
+## 3. The Horospherical Gaussian
  
 ### Setting
 
@@ -166,7 +189,7 @@ For $d = 16$ and $\sigma = 0.3$, this gives an error of approximately 2.87 — n
  
 ---
 
-## Experimental Setup
+## 4. Experimental Setup
 
 ### Environment
 
@@ -191,7 +214,7 @@ A sequential world model with GRU recurrence. Prior and posterior are $\mathcal{
  
 ---
 
-## Results
+## 5. Results
 
 ### Experiment 1: Does $\tau$ Spontaneously Encode Depth?
 
@@ -287,7 +310,7 @@ The KL decomposes as height KL + $(d_2-1) \times$ fibre scale KL + drift. With 3
  
 ---
 
-## What This Suggests
+## 6. What This Suggests
 
 The main positive result — the hyperbolic model outperforms the Euclidean baseline on reconstruction for $d_2 \in \{8, 16\}$, with an empirical crossover at $d_2^* \approx 7$ close to the Sarkar threshold — is real but needs to be qualified.
  
@@ -299,7 +322,7 @@ The main positive result — the hyperbolic model outperforms the Euclidean base
 
 ---
 
-## Assumptions and Limitations
+## 7. Assumptions and Limitations
 
 I want to be explicit about what this work assumes and where it might break.
  
@@ -313,7 +336,7 @@ I want to be explicit about what this work assumes and where it might break.
  
 ---
 
-## Theoretical Work
+## 8. Theoretical Work
 
 In parallel to the experiments, I worked on a theoretical question: under what conditions does the ELBO gradient have a strictly positive component along $\partial / \partial \mu_\tau^q$, guaranteeing that training spontaneously pushes representations toward larger $\tau$?
  
@@ -323,7 +346,7 @@ However, two of the three assumptions are strong (stationarity is not guaranteed
 
 --- 
 
-## Code and Reproducibility
+## 9. Code and Reproducibility
 
 All experiments were implemented in PyTorch Lightning. The tree MDP, $\mathcal{HG}$ distribution with KL validation against Monte Carlo, world models, and evaluation metrics are available in the accompanying notebooks.
  
@@ -335,8 +358,8 @@ The key formulas to reproduce are:
 
 ---
 
-## References
- 
+## 10. References
+
 - Baddeley, A. (1992). Working memory. *Science*, 255(5044), 556–559.
 - Ganea, O., Bécigneul, G., & Hofmann, T. (2018). Hyperbolic neural networks. *NeurIPS*.
 - Gu, A., Sala, F., Gunel, B., & Ré, C. (2019). Learning mixed-curvature representations in product spaces. *ICLR*.
