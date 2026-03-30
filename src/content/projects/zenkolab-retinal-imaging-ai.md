@@ -16,7 +16,7 @@ skills:
 
 ## Project overview
 
-Worked on an AI and medical imaging startup project in partnership with the Hopital National de 15-20. Built data and validation workflows for fundus and OCT retinal images at scale.
+Worked on an AI and medical imaging startup project in partnership with a leading ophtalmology hospital. Built data and validation workflows for fundus and OCT retinal images at scale.
 
 ## Story and approach
 
