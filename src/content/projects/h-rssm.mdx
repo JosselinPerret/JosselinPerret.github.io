@@ -19,19 +19,21 @@ import MseGap from "../../components/graphs/MseGap.astro";
 import PerDepthHeatmaps from "../../components/graphs/PerDepthHeatmaps.astro";
 import KlBreakdown from "../../components/graphs/KlBreakdown.astro";
 
-## Project overview
+## Project Overview
 
-Introduced the horospherical Gaussian, a distribution family on hyperbolic space with closed-form KL divergence in O(d), designed to support ELBO-based training of hyperbolic world models at computational cost comparable to Euclidean baselines.
+Introduced the horospherical Gaussian, a distribution family on hyperbolic space with closed-form KL divergence in $O(d)$, designed to support ELBO-based training of hyperbolic world models at computational cost comparable to Euclidean baselines.
+
+---
 
 # Can Hyperbolic Geometry Help World Models Learn Hierarchical Structure?
- 
-*A research exploration at the intersection of Riemannian geometry and model-based reinforcement learning.*<br />
- 
+
+*A research exploration at the intersection of Riemannian geometry and model-based reinforcement learning.*
+
 ---
  
-> **Status:** Work in progress — ongoing research, not yet submitted for publication.
+> **Status:** Work in progress — ongoing research, not yet submitted for publication.  
 > All results presented here are preliminary. I describe what held, what failed, and why.
- 
+
 ---
  
 ## Background and Motivation
@@ -158,7 +160,7 @@ The reference tree uses $B = 4$, $L = 5$, giving 1365 nodes with $\log_2(1365) \
 A sequential world model with GRU recurrence. Prior and posterior are $\mathcal{HG}$ distributions on $\mathbb{H}^{d_2}$ (hyperbolic model) or Gaussian on $\mathbb{R}^{d_2}$ (Euclidean baseline). The comparison is $\mathbb{H}^{d_2}$ vs $\mathbb{R}^{d_2}$ — same total dimensions, same decoder architecture, same parameter count.
  
 ### Metrics
- 
+
 - **Reconstruction MSE**: primary metric, computed on held-out test trajectories
 - **Spearman $\rho_\tau$**: correlation between $\mu_\tau^q$ and ground-truth depth (hyperbolic only)
 - **Linear probes**: logistic regression from $\tau$ alone to predict depth, and from $b$ alone to predict branch index at depth 1 — separating representation quality from reconstruction quality
@@ -185,18 +187,19 @@ However, two things undermined this result:
 |---|---|---|---|
 | Hyperbolic | $\rho_\tau$ | 0.867 | 0.905 |
 | Euclidean | $\rho_\mathrm{euc}$ | 0.895 | 0.907 |
- 
+
 ---
- 
+
 <RhoComparison />
+
 *Violin plots of $\mu_\tau^q$ per depth level. Reference condition (left) shows partial ordering; flat tree (right) shows clean separation on only 3 levels — confirming the negative control failure.*
- 
+
 ---
- 
+
 ### Experiment 2: Capacity Test — $\mathbb{H}^{d_2}$ vs $\mathbb{R}^{d_2}$ under Dimensional Constraint
- 
+
 Since both models had ample capacity at $d_2 = 16$, I ran a full sweep $d_2 \in \{2, 4, 8, 16, 32\}$ to find whether the hyperbolic advantage appears when capacity is genuinely constrained.
- 
+
 ---
 
 <CapacityCurve />
@@ -205,9 +208,7 @@ Since both models had ample capacity at $d_2 = 16$, I ran a full sweep $d_2 \in 
 
 ---
 
-<GradientAttenuation />
-
-<MseGap />
+<GradientAttenuation /> <MseGap />
 
 ---
 
@@ -224,12 +225,13 @@ The results are summarised below. **Three distinct regimes emerge**, not a simpl
 | 8 | **9.93** | 10.25 | **+0.31** | 0.47 | 0.83 | 0.752 | 1.000 |
 | 16 | **9.90** | 10.51 | **+0.61** | 0.43 | 0.87 | 0.897 | 1.000 |
 | 32 | 11.20 | 10.75 | −0.45 | 0.70 | 0.25 | 0.439 | 0.995 |
- 
+
 ---
- 
+
 <PerDepthHeatmaps />
+
 *Per-depth MSE heatmap. Left: hyperbolic. Centre: Euclidean. Right: advantage map (blue = hyperbolic wins, red = Euclidean wins). The hyperbolic model struggles most at depth 1 for small $d_2$ — consistent with the gradient attenuation mechanism described below.*
- 
+
 ---
 
 <LinearProbes />
@@ -237,10 +239,11 @@ The results are summarised below. **Three distinct regimes emerge**, not a simpl
 *Linear probe accuracies showing representation quality. The branch probe at $d_2 = 4$ drops to 0.73 for the hyperbolic model while staying at 1.0 for Euclidean — evidence that the instability at $d_2 = 4$ is specifically in the fibre coordinate $b$.*
 
 ---
- 
+
 <KlBreakdown />
+
 *Kernel density estimates of $\mu_\tau^q$ per depth level across all $d_2$. The pathological case at $d_2 = 4$ ($\mathbb{E}[e^\tau] = 20.4$) is clearly visible: $\tau$ spreads from $-4$ to $+6$ instead of forming depth-aligned clusters.*
- 
+
 ---
  
 ### The Three Failure Regimes
@@ -248,22 +251,25 @@ The results are summarised below. **Three distinct regimes emerge**, not a simpl
 The linear probes are the key diagnostic. At every $d_2$, the depth information and branch information are **present** in the representations — the probe accuracies never collapse to chance. The failures are in optimisation, not representation.
  
 **Regime 1: $d_2 = 2$ — Decoder capacity constraint.**
+
 Probe depth = 0.84, probe branch = 0.95. The representations are correct. But the decoder receives $(\tau, b \cdot e^{-\tau}) \in \mathbb{R}^2$ and must reconstruct $o_t \in \mathbb{R}^{64}$ — a 32:1 compression. The model cannot recover the original observation regardless of representation quality. This is a decoder bottleneck, not a geometric problem.
  
 **Regime 2: $d_2 = 4$ — ELBO instability via gradient explosion.**
+
 The reparameterisation coupling $\partial b / \partial \mu_\tau^q = e^\tau \sigma_b \varepsilon_2$ creates an incentive: when the model needs a strong gradient on $b$ to separate branches, it increases $\mathbb{E}[e^\tau]$ by spreading $\mu_\tau^q$ toward large positive values. With 3 fibre dimensions and 4 branches to separate, the model finds a local optimum where $\tau$ is high-variance and non-informative about depth ($\rho_\tau = 0.43$), while $b$ achieves adequate but imperfect branch separation (probe = 0.73).
  
 **Regime 3: $d_2 = 32$ — KL fibre domination.**
+
 The KL decomposes as height KL + $(d_2-1) \times$ fibre scale KL + drift. With 31 fibre dimensions, the fibre term dominates and the model minimises total KL by making $\sigma_\tau^q$ very small — $\tau$ becomes quasi-constant ($\text{std} = 0.17$) and non-informative ($\rho_\tau = 0.25$, probe = 0.44). All structure is absorbed into $b$.
  
 ---
  
 ## What This Suggests
- 
+
 The main positive result — the hyperbolic model outperforms the Euclidean baseline on reconstruction for $d_2 \in \{8, 16\}$, with an empirical crossover at $d_2^* \approx 7$ close to the Sarkar threshold — is real but needs to be qualified.
  
 **The crossover is not explained by geometry alone.** The Euclidean model fails to make efficient use of its dimensions as $d_2$ grows, while the hyperbolic model finds a better-organised representation at $d_2 = 8$–$16$. Whether this is due to the hyperbolic geometry or to the specific form of the $\mathcal{HG}$ KL (which creates different regularisation pressure than a Gaussian KL) is not yet clear.
- 
+
 **The three failure modes identify concrete fixes.** Each regime has a targeted solution: a stronger decoder for regime 1; a separate KL weight $\beta_\tau$ for the height component to prevent fibre domination for regime 3; and an action-conditioned geodesic prior to stabilise $\tau$ for regime 2. These are directions for future work.
  
 **The linear probes are perhaps the most useful finding.** Demonstrating that representation quality and reconstruction quality can dissociate — and that ELBO optimisation can consistently fail to use correct representations — is a broader observation about variational training on curved spaces that extends beyond this specific setting.
@@ -271,7 +277,7 @@ The main positive result — the hyperbolic model outperforms the Euclidean base
 ---
  
 ## Assumptions and Limitations
- 
+
 I want to be explicit about what this work assumes and where it might break.
  
 **The GRU architecture.** The GRU updates its hidden state using $(\tau_{t-1}, b_{t-1})$ as a flat Euclidean vector. There is no inductive bias toward using $\tau$ for depth or $b$ for branch — the architecture treats them symmetrically. A transformer with attention over hyperbolic representations, or an architecture with an explicit action-conditioned prior on $\tau$, might produce qualitatively different results.
@@ -285,7 +291,7 @@ I want to be explicit about what this work assumes and where it might break.
 ---
  
 ## Theoretical Work (Incomplete)
- 
+
 In parallel to the experiments, I worked on a theoretical question: under what conditions does the ELBO gradient have a strictly positive component along $\partial / \partial \mu_\tau^q$, guaranteeing that training spontaneously pushes representations toward larger $\tau$?
  
 I connected this to the **Kesten-Stigum theorem** (1966) on broadcasting processes on trees, showing that under three assumptions (stationary variance regime, tree-structured environment, Gaussian likelihood), the gradient is positive for all depths beyond a finite critical depth $\ell^*$ when $B e^{-4c} > 1$ (where $c$ is the height increment and $B$ the branching factor). This gives an explicit architectural design criterion: $(\sigma_\tau^p)^2 < \sigma_\mathcal{L}^2(\sqrt{B} - 1)$.
@@ -295,7 +301,7 @@ However, two of the three assumptions are strong (stationarity is not guaranteed
 ---
  
 ## Code and Reproducibility
- 
+
 All experiments were implemented in PyTorch Lightning. The tree MDP, $\mathcal{HG}$ distribution with KL validation against Monte Carlo, world models, and evaluation metrics are available in the accompanying notebooks.
  
 The key formulas to reproduce are:
